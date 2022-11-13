@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Text;
 using RT.Json;
-using RT.Serialization;
 
 namespace KtaneCustomKeys
 {
@@ -48,37 +47,31 @@ namespace KtaneCustomKeys
             {
                 Hold hold = new Hold(data);
                 s_storage.Add(hold.Code, hold);
-                return ClassifyJson.Serialize(new Dictionary<string, string>
+                return new JsonDict
                 {
-                    { "code", hold.Code },
-                    { "token", hold.Token }
-                });
+                    ["code"] = hold.Code,
+                    ["token"] = hold.Token
+                };
             }
-        }
-
-        public static bool Has(string code)
-        {
-            lock (s_storage)
-                return s_storage.ContainsKey(code);
         }
 
         public static string Pull(string code)
         {
             lock (s_storage)
-                return s_storage[code].Data;
+                return s_storage.TryGetValue(code, out var result) ? result.Data : null;
         }
 
-        public static void Remove(string code)
+        public static bool? Remove(string code, string token)
         {
             lock (s_storage)
-                if (s_storage.ContainsKey(code))
-                    s_storage.Remove(code);
-        }
-
-        public static bool IsAuthorized(string code, string token)
-        {
-            lock (s_storage)
-                return s_storage.ContainsKey(code) && s_storage[code].Token == token;
+            {
+                if (!s_storage.TryGetValue(code, out var hold))
+                    return false;
+                if (hold.Token != token)
+                    return null;
+                s_storage.Remove(code);
+                return true;
+            }
         }
 
         private class Hold
