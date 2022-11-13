@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using RT.Json;
 
 namespace KtaneCustomKeys
 {
@@ -41,17 +40,13 @@ namespace KtaneCustomKeys
             }
         }
 
-        public static JsonValue Push(string data)
+        public static string Push(string data)
         {
             lock (s_storage)
             {
                 Hold hold = new Hold(data);
                 s_storage.Add(hold.Code, hold);
-                return new JsonDict
-                {
-                    ["code"] = hold.Code,
-                    ["token"] = hold.Token
-                };
+                return $"{hold.Code}|{hold.Token}";
             }
         }
 

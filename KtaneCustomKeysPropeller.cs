@@ -16,7 +16,7 @@ namespace KtaneCustomKeys
                     if (req.Post["data"].Value == null)
                         return HttpResponse.PlainText("Missing data.", HttpStatusCode._400_BadRequest);
 
-                    return HttpResponse.Json(KtaneCustomKeysHolster.Push(req.Post["data"].Value));
+                    return HttpResponse.PlainText(KtaneCustomKeysHolster.Push(req.Post["data"].Value));
                 }
                 case HttpMethod.Get:
                 {
